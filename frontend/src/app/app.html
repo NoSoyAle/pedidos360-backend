@@ -1,0 +1,20 @@
+<nav class="navbar">
+  <span class="brand">Pedidos360</span>
+  <ul>
+    <li><a routerLink="/productos" routerLinkActive="active">Productos</a></li>
+    <li><a routerLink="/clientes" routerLinkActive="active">Clientes</a></li>
+    <li><a routerLink="/pedidos" routerLinkActive="active">Pedidos</a></li>
+  </ul>
+  <div class="session">
+    @if (usuario()) {
+      <span class="user">{{ usuario() }}</span>
+      <button (click)="logout()">Cerrar sesión</button>
+    } @else {
+      <button (click)="login()">Iniciar sesión</button>
+    }
+  </div>
+</nav>
+
+<main class="content">
+  <router-outlet />
+</main>

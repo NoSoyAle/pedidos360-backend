@@ -1,0 +1,27 @@
+server:
+  port: ${PORT:8083}
+
+spring:
+  application:
+    name: pedidos-service
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/pedidos360}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+azure:
+  activedirectory:
+    issuer-uri: ${AZURE_ISSUER_URI:https://login.microsoftonline.com/your-tenant-id/v2.0}
+    client-id: ${AZURE_CLIENT_ID:your-client-id}
+
+logging:
+  level:
+    org.springframework.security: INFO

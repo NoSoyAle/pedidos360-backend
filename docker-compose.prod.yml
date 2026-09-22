@@ -1,0 +1,110 @@
+version: "3.9"
+
+# Despliegue completo de Pedidos360 en una instancia EC2
+# Aplica .env (variables de entorno) para no exponer secretos en el repositorio.
+#   DB_HOST=postgres
+#   DB_USERNAME=pedidos360
+#   DB_PASSWORD=cambiar
+#   AZURE_ISSUER_URI=https://login.microsoftonline.com/<TENANT_ID>/v2.0
+#   AZURE_CLIENT_ID=<CLIENT_ID_API>
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: pedidos360-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: pedidos360
+      POSTGRES_USER: ${DB_USERNAME:-pedidos360}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-cambiar}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - pedidos360-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-pedidos360}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  clientes:
+    build:
+      context: ./backend
+      args:
+        SERVICE: clientes-service
+    container_name: pedidos360-clientes
+    restart: unless-stopped
+    environment:
+      PORT: 8080
+      DB_URL: jdbc:postgresql://postgres:5432/pedidos360
+      DB_USERNAME: ${DB_USERNAME:-pedidos360}
+      DB_PASSWORD: ${DB_PASSWORD:-cambiar}
+      AZURE_ISSUER_URI: ${AZURE_ISSUER_URI:?Debes definir AZURE_ISSUER_URI}
+      AZURE_CLIENT_ID: ${AZURE_CLIENT_ID:?Debes definir AZURE_CLIENT_ID}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - pedidos360-net
+
+  productos:
+    build:
+      context: ./backend
+      args:
+        SERVICE: productos-service
+    container_name: pedidos360-productos
+    restart: unless-stopped
+    environment:
+      PORT: 8080
+      DB_URL: jdbc:postgresql://postgres:5432/pedidos360
+      DB_USERNAME: ${DB_USERNAME:-pedidos360}
+      DB_PASSWORD: ${DB_PASSWORD:-cambiar}
+      AZURE_ISSUER_URI: ${AZURE_ISSUER_URI:?Debes definir AZURE_ISSUER_URI}
+      AZURE_CLIENT_ID: ${AZURE_CLIENT_ID:?Debes definir AZURE_CLIENT_ID}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - pedidos360-net
+
+  pedidos:
+    build:
+      context: ./backend
+      args:
+        SERVICE: pedidos-service
+    container_name: pedidos360-pedidos
+    restart: unless-stopped
+    environment:
+      PORT: 8080
+      DB_URL: jdbc:postgresql://postgres:5432/pedidos360
+      DB_USERNAME: ${DB_USERNAME:-pedidos360}
+      DB_PASSWORD: ${DB_PASSWORD:-cambiar}
+      AZURE_ISSUER_URI: ${AZURE_ISSUER_URI:?Debes definir AZURE_ISSUER_URI}
+      AZURE_CLIENT_ID: ${AZURE_CLIENT_ID:?Debes definir AZURE_CLIENT_ID}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - pedidos360-net
+
+  nginx:
+    image: nginx:alpine
+    container_name: pedidos360-edge
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./aws/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - clientes
+      - productos
+      - pedidos
+    networks:
+      - pedidos360-net
+
+volumes:
+  pgdata:
+
+networks:
+  pedidos360-net:
+    driver: bridge

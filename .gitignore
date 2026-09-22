@@ -1,0 +1,15 @@
+# Java compilation targets
+backend/**/target/**
+backend/**/*.jar.original
+
+# Angular distribution
+frontend/dist/**
+frontend/node_modules/**
+
+# Environment files (no subir secrets)
+.env
+
+# IDE files
+.idea/
+*.iml
+.vscode/

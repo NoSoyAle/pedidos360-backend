@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:pedidosdb;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+
+azure:
+  activedirectory:
+    issuer-uri: https://login.microsoftonline.com/dummy-test-tenant/v2.0
+    client-id: dummy-client-id

@@ -1,0 +1,180 @@
+openapi: "3.0.1"
+info:
+  title: Pedidos360 - API Gateway
+  description: >-
+    API pública de Pedidos360. Autenticación delegada: los microservicios Spring Boot
+    validan el JWT emitido por Microsoft Entra ID (Azure AD). Este API Gateway enruta
+    el tráfico a los microservicios desplegados en EC2 (a través del NGINX interno).
+  version: 1.0.0
+servers:
+  - url: http://TU_PUBLICA_EC2:80
+
+paths:
+  /api/health:
+    get:
+      summary: Health check de los microservicios
+      operationId: health
+      responses:
+        "200":
+          description: OK
+  /api/clientes:
+    get:
+      summary: Listar clientes
+      operationId: getClientes
+      security:
+        - autorizadorJwt: []
+      responses:
+        "200":
+          description: Lista de clientes
+    post:
+      summary: Crear cliente
+      operationId: createCliente
+      security:
+        - autorizadorJwt: []
+      responses:
+        "201":
+          description: Cliente creado
+  /api/clientes/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Obtener cliente por id
+      operationId: getCliente
+      security:
+        - autorizadorJwt: []
+      responses:
+        "200":
+          description: Cliente encontrado
+    put:
+      summary: Actualizar cliente
+      operationId: updateCliente
+      security:
+        - autorizadorJwt: []
+      responses:
+        "200":
+          description: Cliente actualizado
+    delete:
+      summary: Eliminar cliente
+      operationId: deleteCliente
+      security:
+        - autorizadorJwt: []
+      responses:
+        "204":
+          description: Cliente eliminado
+  /api/productos:
+    get:
+      summary: Listar productos
+      operationId: getProductos
+      security:
+        - autorizadorJwt: []
+      responses:
+        "200":
+          description: Lista de productos
+    post:
+      summary: Crear producto
+      operationId: createProducto
+      security:
+        - autorizadorJwt: []
+      responses:
+        "201":
+          description: Producto creado
+  /api/productos/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Obtener producto por id
+      operationId: getProducto
+      security:
+        - autorizadorJwt: []
+      responses:
+        "200":
+          description: Producto encontrado
+    put:
+      summary: Actualizar producto
+      operationId: updateProducto
+      security:
+        - autorizadorJwt: []
+      responses:
+        "200":
+          description: Producto actualizado
+    delete:
+      summary: Eliminar producto
+      operationId: deleteProducto
+      security:
+        - autorizadorJwt: []
+      responses:
+        "204":
+          description: Producto eliminado
+  /api/pedidos:
+    get:
+      summary: Listar pedidos
+      operationId: getPedidos
+      security:
+        - autorizadorJwt: []
+      responses:
+        "200":
+          description: Lista de pedidos
+    post:
+      summary: Crear pedido
+      operationId: createPedido
+      security:
+        - autorizadorJwt: []
+      responses:
+        "201":
+          description: Pedido creado
+  /api/pedidos/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Obtener pedido por id
+      operationId: getPedido
+      security:
+        - autorizadorJwt: []
+      responses:
+        "200":
+          description: Pedido encontrado
+    delete:
+      summary: Eliminar pedido
+      operationId: deletePedido
+      security:
+        - autorizadorJwt: []
+      responses:
+        "204":
+          description: Pedido eliminado
+  /api/pedidos/{id}/estado:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    patch:
+      summary: Cambiar estado de un pedido
+      operationId: changeEstadoPedido
+      security:
+        - autorizadorJwt: []
+      responses:
+        "200":
+          description: Estado actualizado
+
+components:
+  securitySchemes:
+    autorizadorJwt:
+      type: apiKey
+      name: Authorization
+      in: header
+      description: >-
+        Token de acceso (JWT) obtenido de Microsoft Entra ID.
+        Se envía tal cual (Bearer <token>) y los microservicios lo validan.
