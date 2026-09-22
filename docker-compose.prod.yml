@@ -39,8 +39,8 @@ services:
       DB_URL: jdbc:postgresql://postgres:5432/pedidos360
       DB_USERNAME: ${DB_USERNAME:-pedidos360}
       DB_PASSWORD: ${DB_PASSWORD:-cambiar}
-      AZURE_ISSUER_URI: ${AZURE_ISSUER_URI:?Debes definir AZURE_ISSUER_URI}
-      AZURE_CLIENT_ID: ${AZURE_CLIENT_ID:?Debes definir AZURE_CLIENT_ID}
+      AZURE_ISSUER_URI: https://login.microsoftonline.com/e6ec1370-abd7-4bb3-8deb-8834e6989a27/v2.0
+      AZURE_CLIENT_ID: 5cd80da2-4880-475f-8d55-8e448ea3bf6d
     depends_on:
       postgres:
         condition: service_healthy
